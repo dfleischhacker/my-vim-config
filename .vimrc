@@ -101,6 +101,9 @@ endtry
 
 set background=dark
 
+" let airline populate font map
+let g:airline_powerline_fonts = 1
+
 " Remove toolbar when running in GUI
 if has("gui_running")
   set guioptions-=T
