@@ -175,6 +175,41 @@ map <leader>cd :cd %:p:h<cr>:pwd<cr>
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+" Trigger word wrap with <leader>w and remap j and k to move in visible lines
+noremap <silent> <Leader>w :call ToggleWrap()<CR>
+function ToggleWrap()
+  if &wrap
+    echo "Wrap OFF"
+    setlocal nowrap
+    set virtualedit=all
+    silent! nunmap <buffer> <Up>
+    silent! nunmap <buffer> <Down>
+    silent! nunmap <buffer> <Home>
+    silent! nunmap <buffer> <End>
+    silent! nunmap <buffer> k
+    silent! nunmap <buffer> j
+    silent! iunmap <buffer> <Up>
+    silent! iunmap <buffer> <Down>
+    silent! iunmap <buffer> <Home>
+    silent! iunmap <buffer> <End>
+  else
+    echo "Wrap ON"
+    setlocal wrap linebreak nolist
+    set virtualedit=
+    setlocal display+=lastline
+    noremap  <buffer> <silent> <Up>   gk
+    noremap  <buffer> <silent> <Down> gj
+    noremap  <buffer> <silent> <Home> g<Home>
+    noremap  <buffer> <silent> <End>  g<End>
+    noremap  <buffer> <silent> k      gk
+    noremap  <buffer> <silent> j      gj
+    inoremap <buffer> <silent> <Up>   <C-o>gk
+    inoremap <buffer> <silent> <Down> <C-o>gj
+    inoremap <buffer> <silent> <Home> <C-o>g<Home>
+    inoremap <buffer> <silent> <End>  <C-o>g<End>
+  endif
+endfunction
+
 """""""""""""""""""""""""""""""""""""""
 " Some helpers
 """""""""""""""""""""""""""""""""""""""
