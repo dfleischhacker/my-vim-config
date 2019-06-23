@@ -3,7 +3,7 @@
 # defines utility functions to manage vim plugins downloaded from
 # github without using the git command line
 
-log=true
+#set -xv
 activeGroup="default"
 installDir="${HOME}/.vim"
 
@@ -38,17 +38,18 @@ function installInto {
   ensureDir "${installDir}/pack/${activeGroup}/${packageType}"
   cd "${installDir}/pack/${activeGroup}/${packageType}"
 
+  printf "# Installing plugin '$packageName'\n"
+
   if [[ $packageLocation != https://* ]]; then
-    $log && echo "Detected location without protocol, expanding into github URL"
     packageLocation="https://github.com/$packageLocation/tarball/master"
   fi
 
   if [[ -d $packageName ]]; then
-    $log && echo "Directory $packageName already exists, skipping"
+    printf "  -> Destination directory already exists, skipping\n"
     return
   fi
 
-  echo "Downloading plugin $packageName from '$packageLocation'"
+  printf "  -> Downloading from '$packageLocation'\n"
   mkdir "$packageName"
   curl -# -L "$packageLocation" | tar x -C $packageName --strip-components=1
 
@@ -69,28 +70,3 @@ function installOpt {
   installInto "opt" "$packageName" "$packageLocation"
 }
 
-
-function dummy {
-old_wd=$(pwd)
-cd ~/.vim/pack/daniel/start/
-cat ~/.vim/plugins.txt | grep -v '^#' | while read line; do
-  # extract plugin name and URL from line
-  command=${line%% }
-  parameters=
-  pluginName="${line%%:*}"
-  url=$(echo "${line#*:}" | xargs)
-  if [[ $url != https://* ]]; then
-    echo "Detected location without protocol, expanding into github URL"
-    url="https://github.com/$url/tarball/master"
-  fi
-
-  if [[ -d $pluginName ]]; then
-    echo "Directory $pluginName already exists, skipping"
-    continue
-  fi
-
-  echo "Downloading plugin $pluginName from '$url'"
-  mkdir "$pluginName"
-  curl -L "$url" | tar x -C $pluginName --strip-components=1
-done
-}
